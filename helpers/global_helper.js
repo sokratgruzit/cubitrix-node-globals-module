@@ -1,8 +1,8 @@
 const options = require("../models/options");
 
-function get_option_by_key(key) {
+async function get_option_by_key(key) {
   try {
-    let option = options.findOne({ key });
+    let option = await options.findOne({ key });
     if (option) {
       return {
         success: true,

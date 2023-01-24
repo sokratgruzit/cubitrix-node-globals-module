@@ -9,6 +9,9 @@ const transactions = new mongoose.Schema(
     tx_hash: String,
     domination: Number,
     tx_status: String,
+    tx_fee: Number,
+    tx_fee_currency: String,
+    tx_currency: String,
   },
   {
     timestamps: true,
