@@ -7,22 +7,43 @@ const transaction_types = require("../models/txs/transaction_types");
 // make_transaction
 async function make_transaction(req, res) {
   try {
-    let { from, to, amount, tx_type, tx_hash, domination, tx_currency } =
-      req.body;
+    let { from, to, amount, tx_type, tx_hash, tx_currency } = req.body;
+    if (!from && !to && !amount && !tx_type && !tx_hash && !tx_currency) {
+      return main_helper.error_response(
+        res,
+        "please provide all necessary values"
+      );
+    }
     let tx_type_db = await get_tx_type(tx_type);
+
     let tx_global_currency = await global_helper.get_option_by_key(
       "global_currency"
     );
-    if (!tx_type_db.success && !tx_global_currency.success) {
+
+    if (!(tx_type_db.success && tx_global_currency.success)) {
       return main_helper.error_response(
         res,
         "such kind of transaction type is not defined"
       );
     }
-    let tx_global_currency_value = tx_global_currency?.data?.value;
-    if (tx_global_currency_value) {
+    let tx_fee_currency = tx_global_currency?.data?.value;
+    let tx_wei = tx_type_db?.data?.tx_fee;
+
+    if (!tx_fee_currency && !tx_wei) {
       return main_helper.error_response(res, "fee currency is not defined");
     }
+
+    let tx_fee_value = await global_helper.calculate_tx_fee(
+      tx_wei,
+      tx_fee_currency
+    );
+    if (!tx_fee_value.success) {
+      return main_helper.error_response(res, tx_fee_value.message);
+    }
+    let tx_fee = tx_fee_value.data;
+    let domination = 0;
+    // return main_helper.error_response(res, tx_fee);
+
     let tx_save = await transactions.create({
       from,
       to,
@@ -31,12 +52,12 @@ async function make_transaction(req, res) {
       tx_status: "pending",
       tx_type,
       domination,
-      // tx_fee,
-      // tx_fee_currency,
-      // tx_currency,
+      tx_fee,
+      tx_fee_currency,
+      tx_currency,
     });
     if (tx_save) {
-      return main_helper.success_response(res, tx_global_currency_value);
+      return main_helper.success_response(res, tx_save);
     }
     return main_helper.error_response(res, "error saving transaction");
   } catch (e) {
@@ -48,7 +69,7 @@ async function get_tx_type(tx_type) {
   try {
     let type = await transaction_types.findOne({ name: tx_type }).exec();
     if (type) {
-      return type;
+      return main_helper.return_data(true, type);
     }
     return main_helper.error_message("tx_type not found");
   } catch (e) {
