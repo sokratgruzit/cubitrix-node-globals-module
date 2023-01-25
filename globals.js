@@ -1,7 +1,7 @@
-const router = require("./routes/index");
+const globals_router = require("./routes/index");
 const transactions = require("./routes/transactions");
 
 module.exports = {
-  router: router,
+  globals_router: globals_router,
   transactions: transactions,
 };

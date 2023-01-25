@@ -1,7 +1,6 @@
-const transactions = require("../models/txs/transactions");
 const main_helper = require("../helpers/index");
 const global_helper = require("../helpers/global_helper");
-const transaction_types = require("../models/txs/transaction_types");
+const { transaction_types, transactions } = require("@cubitrix/models");
 // var Web3 = require("web3");
 
 // make_transaction

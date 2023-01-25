@@ -1,4 +1,4 @@
-const accounts = require("../models/accounts/accounts");
+const { accounts } = require("@cubitrix/models");
 const main_helper = require("../helpers/index");
 
 // get account balance

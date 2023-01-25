@@ -1,7 +1,6 @@
-const options = require("../models/options");
 const main_helper = require("../helpers/index");
 var Web3 = require("web3");
-
+const { options } = require("@cubitrix/models");
 async function get_option_by_key(key) {
   try {
     let option = await options.findOne({ key });

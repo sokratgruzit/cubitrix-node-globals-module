@@ -1,6 +1,8 @@
-let options = require("../models/options");
-let account_types = require("../models/accounts/account_types");
-let transaction_types = require("../models/txs/transaction_types");
+const {
+  account_types,
+  transaction_types,
+  options,
+} = require("@cubitrix/models");
 
 async function insert_all_start_elements(req, res) {
   let total_migrated_list = [];
