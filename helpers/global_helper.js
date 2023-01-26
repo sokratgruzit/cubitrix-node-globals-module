@@ -1,6 +1,7 @@
 const main_helper = require("../helpers/index");
 var Web3 = require("web3");
 const { options, accounts } = require("@cubitrix/models");
+const { ObjectId } = require("mongodb");
 async function get_option_by_key(key) {
   try {
     let option = await options.findOne({ key });
@@ -43,8 +44,41 @@ async function check_if_address_exists(address) {
     return main_helper.error_message("error checking address");
   }
 }
+// get account balance
+async function get_account_balance(address, account_type_id) {
+  try {
+    account_type_id = ObjectId(account_type_id);
+    let balance = await accounts.findOne({ address: address, account_type_id });
+    if (balance) {
+      return main_helper.return_data(true, balance.balance);
+    }
+    return main_helper.error_message("error");
+  } catch (e) {
+    console.log(e.message);
+    return main_helper.error_message("error");
+  }
+}
+// set account balance
+async function set_account_balance(address, account_type_id, balance) {
+  try {
+    let balance_update = await accounts.findOneAndUpdate(
+      { address, account_type_id },
+      { address, account_type_id, balance }
+    );
+    if (balance_update) {
+      return main_helper.success_message("balance updated");
+    }
+    return main_helper.error_message("error");
+  } catch (e) {
+    console.log(e.message);
+    return main_helper.error_message("error");
+  }
+}
+
 module.exports = {
   get_option_by_key,
   calculate_tx_fee,
   check_if_address_exists,
+  get_account_balance,
+  set_account_balance,
 };

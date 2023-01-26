@@ -20,11 +20,11 @@ function return_data(status, data) {
 }
 
 function success_response(res, data) {
-  return res.status(200).send(data);
+  return res.status(200).json(data);
 }
 
 function error_response(res, data) {
-  return res.status(400).send(data);
+  return res.status(400).json(data);
 }
 
 module.exports = {

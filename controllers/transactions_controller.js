@@ -6,13 +6,23 @@ const { transaction_types, transactions } = require("@cubitrix/models");
 // make_transaction
 async function make_transaction(req, res) {
   try {
-    let { from, to, amount, tx_type, tx_hash, tx_currency } = req.body;
-    if (!from && !to && !amount && !tx_type && !tx_hash && !tx_currency) {
+    let { from, to, amount, tx_type, tx_hash, tx_currency, account_type } =
+      req.body;
+    if (
+      !from &&
+      !to &&
+      !amount &&
+      !tx_type &&
+      !tx_hash &&
+      !tx_currency &&
+      !account_type
+    ) {
       return main_helper.error_response(
         res,
         "please provide all necessary values"
       );
     }
+    amount = parseFloat(amount);
     let tx_type_db = await get_tx_type(tx_type);
     let check_from_address_exists = await global_helper.check_if_address_exists(
       from
@@ -51,6 +61,44 @@ async function make_transaction(req, res) {
       return main_helper.error_response(res, tx_fee_value.message);
     }
     let tx_fee = tx_fee_value.data;
+    let get_from_account_balance = await global_helper.get_account_balance(
+      from,
+      account_type
+    );
+    let get_to_account_balance = await global_helper.get_account_balance(
+      to,
+      account_type
+    );
+    // return main_helper.error_response(res);
+    if (
+      !get_from_account_balance.success ||
+      get_from_account_balance.data == null ||
+      get_from_account_balance.data < amount + parseFloat(tx_fee)
+    ) {
+      return main_helper.error_response(
+        res,
+        "there is no sufficient amount on your balance"
+      );
+    } else {
+      let get_from_account_balance_value = parseFloat(
+        get_from_account_balance?.data
+      );
+      let get_to_account_balance_value = parseFloat(
+        get_to_account_balance?.data
+      );
+
+      await global_helper.set_account_balance(
+        from,
+        account_type,
+        get_from_account_balance_value - (amount + parseFloat(tx_fee))
+      );
+      await global_helper.set_account_balance(
+        to,
+        account_type,
+        (get_to_account_balance_value ? get_to_account_balance_value : 0) +
+          amount
+      );
+    }
     let domination = 0;
     // return main_helper.error_response(res, tx_fee);
 
