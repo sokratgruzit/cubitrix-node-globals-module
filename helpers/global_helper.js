@@ -1,6 +1,6 @@
 const main_helper = require("../helpers/index");
 var Web3 = require("web3");
-const { options } = require("@cubitrix/models");
+const { options, accounts } = require("@cubitrix/models");
 async function get_option_by_key(key) {
   try {
     let option = await options.findOne({ key });
@@ -31,7 +31,20 @@ async function calculate_tx_fee(wei = 21000, currency = "ether") {
     return main_helper.error_message("error calculating tx_fee");
   }
 }
+async function check_if_address_exists(address) {
+  try {
+    const check_address = await accounts.findOne({ address });
+    if (check_address) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.log("check_if_address_exists:", e.message);
+    return main_helper.error_message("error checking address");
+  }
+}
 module.exports = {
   get_option_by_key,
   calculate_tx_fee,
+  check_if_address_exists,
 };

@@ -14,7 +14,18 @@ async function make_transaction(req, res) {
       );
     }
     let tx_type_db = await get_tx_type(tx_type);
-
+    let check_from_address_exists = await global_helper.check_if_address_exists(
+      from
+    );
+    let check_to_address_exists = await global_helper.check_if_address_exists(
+      to
+    );
+    if (!check_from_address_exists && !check_to_address_exists) {
+      return main_helper.error_response(
+        res,
+        "we dont have such address registered in our system."
+      );
+    }
     let tx_global_currency = await global_helper.get_option_by_key(
       "global_currency"
     );
@@ -22,7 +33,7 @@ async function make_transaction(req, res) {
     if (!(tx_type_db.success && tx_global_currency.success)) {
       return main_helper.error_response(
         res,
-        "such kind of transaction type is not defined"
+        "such kind of transaction type is not defined."
       );
     }
     let tx_fee_currency = tx_global_currency?.data?.value;
