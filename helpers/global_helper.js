@@ -1,6 +1,11 @@
 const main_helper = require("../helpers/index");
 var Web3 = require("web3");
-const { options, accounts } = require("@cubitrix/models");
+const {
+  options,
+  accounts,
+  account_types,
+  transaction_types,
+} = require("@cubitrix/models");
 const { ObjectId } = require("mongodb");
 async function get_option_by_key(key) {
   try {
@@ -74,6 +79,24 @@ async function set_account_balance(address, account_type_id, balance) {
     return main_helper.error_message("error");
   }
 }
+// getting all types from db
+async function get_types(req, res) {
+  try {
+    let all_account_types = await account_types
+      .find()
+      .sort({ createdAt: "desc" });
+    let all_transaction_types = await transaction_types
+      .find()
+      .sort({ createdAt: "desc" });
+
+    return main_helper.success_response(res, {
+      all_account_types,
+      all_transaction_types,
+    });
+  } catch (e) {
+    return main_helper.error_message(e.message);
+  }
+}
 
 module.exports = {
   get_option_by_key,
@@ -81,4 +104,5 @@ module.exports = {
   check_if_address_exists,
   get_account_balance,
   set_account_balance,
+  get_types,
 };
