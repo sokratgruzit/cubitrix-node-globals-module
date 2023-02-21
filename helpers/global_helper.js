@@ -97,6 +97,37 @@ async function get_types(req, res) {
     return main_helper.error_message(e.message);
   }
 }
+// get account type by address
+async function get_type_by_address(address) {
+  try {
+    let type = await accounts.findOne({ address: address }).exec();
+
+    if (type) {
+      let type_id = type.account_type_id;
+      return type_id.toString();
+    }
+    /*else {
+      await account_types.create({ name: type_name }).exec();
+      type = await account_types.findOne({ name: type_name }).exec();
+      return type._id;
+    }*/
+    return 0;
+  } catch (e) {
+    return main_helper.error_message(e.message);
+  }
+}
+function make_hash(length = 66) {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
 
 module.exports = {
   get_option_by_key,
@@ -105,4 +136,6 @@ module.exports = {
   get_account_balance,
   set_account_balance,
   get_types,
+  get_type_by_address,
+  make_hash,
 };

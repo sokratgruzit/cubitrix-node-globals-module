@@ -1,6 +1,6 @@
 {
   "name": "@cubitrix/cubitrix-node-globals-module",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "module for managing globals data",
   "main": "globals.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.1",
     "web3": "^1.8.1",
-    "@cubitrix/models": "0.0.5"
+    "@cubitrix/models": "0.0.9"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

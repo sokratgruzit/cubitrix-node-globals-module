@@ -6,22 +6,16 @@ const { transaction_types, transactions } = require("@cubitrix/models");
 // make_transaction
 async function make_transaction(req, res) {
   try {
-    let { from, to, amount, tx_type, tx_hash, tx_currency, account_type } =
-      req.body;
-    if (
-      !from &&
-      !to &&
-      !amount &&
-      !tx_type &&
-      !tx_hash &&
-      !tx_currency &&
-      !account_type
-    ) {
+    let { from, to, amount, tx_type, tx_currency } = req.body;
+    if (!from && !to && !amount && !tx_type && !tx_currency) {
       return main_helper.error_response(
         res,
         "please provide all necessary values"
       );
     }
+    let account_type = await global_helper.get_type_by_address(from);
+    let tx_hash_generated = global_helper.make_hash();
+    let tx_hash = ("0x" + tx_hash_generated).toLowerCase();
     amount = parseFloat(amount);
     let tx_type_db = await get_tx_type(tx_type);
     let check_from_address_exists = await global_helper.check_if_address_exists(
