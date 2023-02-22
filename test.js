@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json({ extended: true }));
 app.use(cors(cors_options));
 app.use("/globals", router);
-app.use("/transactions", transactions);
+app.use("/api/transactions", transactions);
 // console.log(accounts.index("jinx1"));
 // app.use('/accounts', router)
 

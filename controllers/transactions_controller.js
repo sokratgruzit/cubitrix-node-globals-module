@@ -13,7 +13,8 @@ async function make_transaction(req, res) {
         "please provide all necessary values"
       );
     }
-    let account_type = await global_helper.get_type_by_address(from);
+    let account_type_from = await global_helper.get_type_by_address(from);
+    let account_type_to = await global_helper.get_type_by_address(to);
     let tx_hash_generated = global_helper.make_hash();
     let tx_hash = ("0x" + tx_hash_generated).toLowerCase();
     amount = parseFloat(amount);
@@ -57,11 +58,11 @@ async function make_transaction(req, res) {
     let tx_fee = tx_fee_value.data;
     let get_from_account_balance = await global_helper.get_account_balance(
       from,
-      account_type
+      account_type_from
     );
     let get_to_account_balance = await global_helper.get_account_balance(
       to,
-      account_type
+      account_type_to
     );
     // return main_helper.error_response(res);
     if (
@@ -83,12 +84,12 @@ async function make_transaction(req, res) {
 
       await global_helper.set_account_balance(
         from,
-        account_type,
+        account_type_from,
         get_from_account_balance_value - (amount + parseFloat(tx_fee))
       );
       await global_helper.set_account_balance(
         to,
-        account_type,
+        account_type_to,
         (get_to_account_balance_value ? get_to_account_balance_value : 0) +
           amount
       );
