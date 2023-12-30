@@ -6,10 +6,21 @@ require("dotenv").config();
 const cors = require("cors");
 const cors_options = require("./config/cors_options");
 const app = express();
-app.use(express.json({ extended: true }));
+app.use(express.json({extended: true}));
 app.use(cors(cors_options));
 app.use("/globals", router);
 app.use("/api/transactions", transactions);
+const CryptoJS = require("crypto-js");
+
+const SECRET_KEY = process.env.SECRET_KEY;
+const MONGO_URL = process.env.MONGO_URL;
+
+function decrypt(ciphertext, secretKey) {
+  const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
+  const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+  return decryptedText;
+}
+const mongoUrl = decrypt(MONGO_URL, SECRET_KEY);
 // console.log(accounts.index("jinx1"));
 // app.use('/accounts', router)
 
@@ -39,7 +50,7 @@ async function start() {
   const PORT = process.env.PORT || 5000;
   try {
     mongoose.set("strictQuery", false);
-    await mongoose.connect(process.env.MONGO_URL, {
+    await mongoose.connect(mongoUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
