@@ -10,17 +10,10 @@ app.use(express.json({extended: true}));
 app.use(cors(cors_options));
 app.use("/globals", router);
 app.use("/api/transactions", transactions);
-const CryptoJS = require("crypto-js");
+const decryptEnv = require("./utils/decryptEnv");
 
-const SECRET_KEY = process.env.SECRET_KEY;
 const MONGO_URL = process.env.MONGO_URL;
-
-function decrypt(ciphertext, secretKey) {
-  const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
-  const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-  return decryptedText;
-}
-const mongoUrl = decrypt(MONGO_URL, SECRET_KEY);
+const mongoUrl = decryptEnv(MONGO_URL);
 // console.log(accounts.index("jinx1"));
 // app.use('/accounts', router)
 
